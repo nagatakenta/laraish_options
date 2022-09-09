@@ -46,7 +46,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
      * @var array
      */
     protected $defaultConfigs = [
-        'attributes' => [],
+        'attributes' => []
     ];
 
     /**
@@ -78,6 +78,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
      */
     protected static $template;
 
+
     /**
      * A static method for enqueuing style and script related to this field generator.
      *
@@ -95,13 +96,13 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
         $isEnqueued = true;
 
         // if no script and style need to be enqueued quit immediately.
-        if (!(static::$scripts or static::$styles)) {
+        if ( ! (static::$scripts OR static::$styles)) {
             return;
         }
 
         $absolutePath = str_replace('\\', '/', ABSPATH);
-        $currentDir = str_replace('\\', '/', __DIR__);
-        $assetsUrl = home_url(str_replace($absolutePath, '', $currentDir)) . '/resources/assets/';
+        $currentDir   = str_replace('\\', '/', __DIR__);
+        $assetsUrl    = home_url(str_replace($absolutePath, '', $currentDir)) . '/resources/assets/';
 
         add_action('admin_enqueue_scripts', function ($hook) use ($optionsPage, $assetsUrl) {
             $thisPageHookSuffix = '_page_' . $optionsPage;
@@ -109,7 +110,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
                 $prefix = $optionsPage . '__' . static::class . '__';
 
                 if (static::$scripts) {
-                    foreach ((array) static::$scripts as $script) {
+                    foreach ((array)static::$scripts as $script) {
                         if (filter_var($script, FILTER_VALIDATE_URL) === false) {
                             $script = $assetsUrl . trim($script, '/');
                         }
@@ -118,7 +119,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
                     }
                 }
                 if (static::$styles) {
-                    foreach ((array) static::$styles as $style) {
+                    foreach ((array)static::$styles as $style) {
                         if (filter_var($style, FILTER_VALIDATE_URL) === false) {
                             $style = $assetsUrl . trim($style, '/');
                         }
@@ -139,7 +140,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
     {
         static $templateContent;
 
-        if (!isset($templateContent)) {
+        if ( ! isset($templateContent)) {
             $templateContent = '';
 
             if (static::$template) {
@@ -148,6 +149,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
                     $templateContent = file_get_contents($templatePath);
                 }
             }
+
         }
 
         $instance->templateInstance = new Template($templateContent);
@@ -205,18 +207,17 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
     {
         // check if the 'defaultValue' is a valid value for the field.
         if (array_key_exists('defaultValue', $configs)) {
-            if (!$this->validateFieldValue($configs['defaultValue'])) {
-                throw new InvalidArgumentException(
-                    "The value `{$configs['defaultValue']}` is not a valid `defaultValue`."
-                );
+            if ( ! $this->validateFieldValue($configs['defaultValue'])) {
+                throw new InvalidArgumentException("The value `{$configs['defaultValue']}` is not a valid `defaultValue`.");
             }
         }
+
 
         $this->options = $options;
         $this->configs = array_replace_recursive($this->defaultConfigs, $configs);
 
-        $this->fieldId = $fieldName;
-        $this->fieldName = $this->normalizeFieldName($fieldName);
+        $this->fieldId    = $fieldName;
+        $this->fieldName  = $this->normalizeFieldName($fieldName);
         $this->fieldValue = $this->normalizeFieldValue($fieldName);
 
         static::enqueueAssetsOnce($optionsPage);
@@ -257,12 +258,12 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
     final private function normalizeFieldValue($originalFieldName)
     {
         $defaultValue = $this->config('defaultValue');
-        $value = $this->options->get($originalFieldName, $defaultValue);
+        $value        = $this->options->get($originalFieldName, $defaultValue);
 
         // if the current option has a value
         if ($value !== $defaultValue) {
             // and if the current option is not a valid value for the field
-            if (!$this->validateFieldValue($value)) {
+            if ( ! $this->validateFieldValue($value)) {
                 // then set the old value to the default value of the field
                 $this->options->set($originalFieldName, $defaultValue);
                 $value = $defaultValue;
@@ -279,12 +280,10 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
      */
     final protected function allAttributes()
     {
-        $name = $this->fieldName;
+        $name  = $this->fieldName;
         $value = $this->fieldValue;
 
-        return static::convertToAttributesString(
-            array_merge($this->config('attributes'), ['name' => $name, 'value' => $value])
-        );
+        return static::convertToAttributesString(array_merge($this->config('attributes'), ['name' => $name, 'value' => $value]));
     }
 
     /**
@@ -311,7 +310,7 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
     {
         //$fieldId = $this->config('id');
 
-        if (!$this->validateFieldValue($value)) {
+        if ( ! $this->validateFieldValue($value)) {
             add_settings_error($this->fieldId, 'invalid_type', $message);
 
             // restore to old value
@@ -387,10 +386,10 @@ abstract class BaseFieldGenerator implements OptionsFieldGeneratorContract
         // Add prefix and suffix if possible
         $suffix = $this->config('suffix');
         $prefix = $this->config('prefix');
-        if ($suffix or $prefix) {
+        if ($suffix OR $prefix) {
             $suffix = $suffix ? "<span class=\"laraish-input-group-addon\">{$suffix}</span>" : '';
             $prefix = $prefix ? "<span class=\"laraish-input-group-addon\">{$prefix}</span>" : '';
-            $html = "<div class=\"laraish-input-group\">{$prefix}" . $html . "{$suffix}</div>";
+            $html   = "<div class=\"laraish-input-group\">{$prefix}" . $html . "{$suffix}</div>";
         }
 
         // Add help link if possible

@@ -9,8 +9,8 @@ class ColorFieldGenerator extends BaseFieldGenerator
      * @var array
      */
     protected $defaultConfigs = [
-        'attributes' => [],
-        'defaultValue' => '',
+        'attributes'   => [],
+        'defaultValue' => ''
     ];
 
     /**
@@ -35,6 +35,7 @@ class ColorFieldGenerator extends BaseFieldGenerator
      */
     protected function validateFieldValue($value)
     {
-        return preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/', $value);
+        return preg_match('/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/',$value);
     }
+
 }
